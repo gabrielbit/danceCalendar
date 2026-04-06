@@ -4,9 +4,11 @@ import { useState, useEffect, useCallback } from "react";
 import {
   startOfMonth,
   endOfMonth,
-  format,
+  startOfWeek,
+  endOfWeek,
 } from "date-fns";
 import CalendarGrid from "@/components/calendar/CalendarGrid";
+import WeekGrid from "@/components/calendar/WeekGrid";
 import ListView from "@/components/calendar/ListView";
 import MonthNav from "@/components/calendar/MonthNav";
 import ViewToggle from "@/components/calendar/ViewToggle";
@@ -57,7 +59,7 @@ function hasVisitedBefore(): boolean {
 
 export default function HomePage() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [view, setView] = useState<"calendar" | "list">("calendar");
+  const [view, setView] = useState<"calendar" | "week" | "list">("week");
   const [categories, setCategories] = useState<Category[]>([]);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
@@ -83,8 +85,16 @@ export default function HomePage() {
   // Load events when month or filters change
   const fetchEvents = useCallback(async () => {
     setLoading(true);
-    const start = startOfMonth(currentDate).toISOString();
-    const end = endOfMonth(currentDate).toISOString();
+    let start: string;
+    let end: string;
+
+    if (view === "week") {
+      start = startOfWeek(currentDate, { weekStartsOn: 1 }).toISOString();
+      end = endOfWeek(currentDate, { weekStartsOn: 1 }).toISOString();
+    } else {
+      start = startOfMonth(currentDate).toISOString();
+      end = endOfMonth(currentDate).toISOString();
+    }
 
     const params = new URLSearchParams({ start, end });
     if (selectedTags.length > 0) {
@@ -95,7 +105,7 @@ export default function HomePage() {
     const data = await res.json();
     setEvents(data);
     setLoading(false);
-  }, [currentDate, selectedTags]);
+  }, [currentDate, selectedTags, view]);
 
   useEffect(() => {
     fetchEvents();
@@ -132,7 +142,7 @@ export default function HomePage() {
       <div className="mx-auto max-w-5xl px-4 py-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-          <MonthNav currentDate={currentDate} onDateChange={setCurrentDate} />
+          <MonthNav currentDate={currentDate} onDateChange={setCurrentDate} view={view} />
           <ViewToggle view={view} onViewChange={setView} />
         </div>
 
@@ -155,6 +165,8 @@ export default function HomePage() {
           </div>
         ) : view === "calendar" ? (
           <CalendarGrid currentDate={currentDate} events={events} />
+        ) : view === "week" ? (
+          <WeekGrid currentDate={currentDate} events={events} />
         ) : (
           <ListView events={events} />
         )}

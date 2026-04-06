@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Dancing Calendar",
+  title: "mover",
   description: "Calendario comunitario de danza y wellness",
 };
 

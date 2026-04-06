@@ -12,7 +12,7 @@ export default function Header() {
     <header className="border-b border-gray-100 bg-white">
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
         <Link href="/" className="text-lg font-semibold text-gray-900">
-          Dancing Calendar
+          mover
         </Link>
 
         <nav className="flex items-center gap-3">
@@ -20,7 +20,7 @@ export default function Header() {
             <>
               <Link
                 href="/events/new"
-                className="rounded-lg bg-gray-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
+                className="rounded-lg bg-orange-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-orange-600 transition-colors shadow-sm"
               >
                 + Evento
               </Link>

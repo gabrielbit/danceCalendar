@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { formatPrice } from "@/lib/format";
 
 interface EventCategory {
   categoryId: number;
@@ -35,6 +36,7 @@ export default function EventCard({
   const start = new Date(dateStart);
 
   if (compact) {
+    const emojis = cats.map((c) => c.emoji).join("");
     return (
       <Link
         href={`/events/${id}`}
@@ -43,7 +45,8 @@ export default function EventCard({
           borderLeft: `3px solid ${cats[0]?.color || "#94a3b8"}`,
         }}
       >
-        <span className="font-medium">{format(start, "HH:mm")}</span>{" "}
+        <span className="font-medium">{format(start, "HH:mm")}</span>
+        {emojis && <span className="ml-0.5">{emojis}</span>}{" "}
         <span className="text-gray-600">{title}</span>
       </Link>
     );
@@ -90,7 +93,7 @@ export default function EventCard({
       {(price || userName) && (
         <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-50 text-xs text-gray-400">
           {userName && <span>por {userName}</span>}
-          {price && <span className="font-medium text-gray-600">{price}</span>}
+          {price && <span className="font-medium text-gray-600">{formatPrice(price)}</span>}
         </div>
       )}
     </Link>

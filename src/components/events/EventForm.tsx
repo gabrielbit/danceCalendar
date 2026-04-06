@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import RichTextEditor from "@/components/ui/RichTextEditor";
 
 interface Category {
   id: number;
@@ -129,16 +130,13 @@ export default function EventForm({ initialData, mode }: EventFormProps) {
       </div>
 
       <div>
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
           Descripción
         </label>
-        <textarea
-          id="description"
-          rows={4}
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
-          placeholder="Contá de qué se trata..."
+        <RichTextEditor
+          content={description}
+          onChange={setDescription}
+          placeholder="Contá de qué se trata... usá emojis, negritas, listas..."
         />
       </div>
 
@@ -183,31 +181,38 @@ export default function EventForm({ initialData, mode }: EventFormProps) {
         />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="price" className="block text-sm font-medium text-gray-700">
-            Precio
-          </label>
+      <div>
+        <label htmlFor="price" className="block text-sm font-medium text-gray-700">
+          Precio
+        </label>
+        <div className="mt-1 relative">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">$</span>
           <input
             id="price"
+            type="number"
+            min="0"
+            step="1"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
-            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
-            placeholder="$19.000 / Aporte voluntario / Gratis"
+            className="block w-full rounded-lg border border-gray-300 pl-7 pr-3 py-2 text-sm focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            placeholder="19000"
           />
         </div>
-        <div>
-          <label htmlFor="paymentInfo" className="block text-sm font-medium text-gray-700">
-            Info de pago
-          </label>
-          <input
-            id="paymentInfo"
-            value={paymentInfo}
-            onChange={(e) => setPaymentInfo(e.target.value)}
-            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
-            placeholder="Alias, link de MP, etc."
-          />
-        </div>
+        <p className="mt-1 text-xs text-gray-400">Solo el número, sin puntos ni signos. Dejá vacío si es gratis o a voluntad.</p>
+      </div>
+
+      <div>
+        <label htmlFor="paymentInfo" className="block text-sm font-medium text-gray-700">
+          Cómo pagar
+        </label>
+        <textarea
+          id="paymentInfo"
+          rows={2}
+          value={paymentInfo}
+          onChange={(e) => setPaymentInfo(e.target.value)}
+          className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
+          placeholder={"Alias: mi.alias.mp\nCBU: 000000000000\nLink: passline.com/mi-evento"}
+        />
       </div>
 
       <div>
