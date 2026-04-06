@@ -256,17 +256,18 @@ export default function EventForm({ initialData, mode }: EventFormProps) {
           <label htmlFor="recurrence" className="block text-sm font-medium text-gray-700">
             Recurrencia
           </label>
-        <select
-          id="recurrence"
-          value={recurrenceType}
-          onChange={(e) => setRecurrenceType(e.target.value)}
-          className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
-        >
-          <option value="none">Evento único</option>
-          <option value="weekly">Semanal</option>
-          <option value="biweekly">Quincenal</option>
-          <option value="monthly">Mensual</option>
-        </select>
+          <select
+            id="recurrence"
+            value={recurrenceType}
+            onChange={(e) => setRecurrenceType(e.target.value)}
+            className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
+          >
+            <option value="none">Evento único</option>
+            <option value="weekly">Semanal</option>
+            <option value="biweekly">Quincenal</option>
+            <option value="monthly">Mensual</option>
+          </select>
+        </div>
       </div>
 
       <div>

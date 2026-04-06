@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
+import { generateUniqueSlug } from "@/lib/slug";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: DrizzleAdapter(db),
@@ -50,6 +51,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
+  events: {
+    async createUser({ user }) {
+      if (user.id && user.name) {
+        const slug = await generateUniqueSlug(user.name);
+        await db.update(users).set({ slug }).where(eq(users.id, user.id));
+      }
+    },
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user?.id) {

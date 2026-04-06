@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
+import { generateUniqueSlug } from "@/lib/slug";
 
 export async function POST(request: Request) {
   const { name, email, password } = await request.json();
@@ -35,6 +36,7 @@ export async function POST(request: Request) {
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
+  const slug = await generateUniqueSlug(name);
 
   const [newUser] = await db
     .insert(users)
@@ -42,6 +44,7 @@ export async function POST(request: Request) {
       name,
       email,
       password: hashedPassword,
+      slug,
     })
     .returning({ id: users.id });
 

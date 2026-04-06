@@ -6,6 +6,35 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const [event] = await db
+    .select({ title: events.title, description: events.description, dateStart: events.dateStart, location: events.location })
+    .from(events)
+    .where(eq(events.id, id))
+    .limit(1);
+
+  if (!event) return { title: "Evento no encontrado" };
+
+  const dateStr = format(event.dateStart, "d 'de' MMMM yyyy · HH:mm", { locale: es });
+  const desc = [dateStr, event.location].filter(Boolean).join(" — ");
+
+  return {
+    title: event.title,
+    description: event.description || desc,
+    openGraph: {
+      title: event.title,
+      description: desc,
+      type: "website",
+    },
+  };
+}
 
 export default async function EventDetailPage({
   params,
@@ -26,11 +55,15 @@ export default async function EventDetailPage({
       imageUrl: events.imageUrl,
       price: events.price,
       paymentInfo: events.paymentInfo,
-      contactInfo: events.contactInfo,
+      instagram: events.instagram,
+      whatsapp: events.whatsapp,
+      website: events.website,
+      modality: events.modality,
       recurrenceType: events.recurrenceType,
       status: events.status,
       userId: events.userId,
       userName: users.name,
+      userSlug: users.slug,
     })
     .from(events)
     .leftJoin(users, eq(events.userId, users.id))
@@ -62,6 +95,12 @@ export default async function EventDetailPage({
     weekly: "Semanal",
     biweekly: "Quincenal",
     monthly: "Mensual",
+  };
+
+  const MODALITY_LABELS: Record<string, string> = {
+    presencial: "Presencial",
+    virtual: "Virtual",
+    hibrido: "Híbrido",
   };
 
   return (
@@ -113,6 +152,20 @@ export default async function EventDetailPage({
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
               </svg>
               {event.location}
+              {event.modality !== "presencial" && (
+                <span className="ml-1 rounded-full bg-blue-50 px-2 py-0.5 text-xs text-blue-600">
+                  {MODALITY_LABELS[event.modality]}
+                </span>
+              )}
+            </div>
+          )}
+
+          {!event.location && event.modality !== "presencial" && (
+            <div className="flex items-center gap-2">
+              <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25" />
+              </svg>
+              {MODALITY_LABELS[event.modality]}
             </div>
           )}
 
@@ -145,16 +198,38 @@ export default async function EventDetailPage({
               <p className="text-sm text-gray-700">{event.paymentInfo}</p>
             </div>
           )}
-          {event.contactInfo && (
+          {(event.instagram || event.whatsapp || event.website) && (
             <div>
               <span className="text-xs font-medium text-gray-400 uppercase">Contacto</span>
-              <p className="text-sm text-gray-700">{event.contactInfo}</p>
+              <div className="flex flex-wrap gap-3 mt-1">
+                {event.instagram && (
+                  <span className="text-sm text-gray-700">
+                    IG: {event.instagram}
+                  </span>
+                )}
+                {event.whatsapp && (
+                  <span className="text-sm text-gray-700">
+                    WA: {event.whatsapp}
+                  </span>
+                )}
+                {event.website && (
+                  <span className="text-sm text-gray-700">
+                    Web: {event.website}
+                  </span>
+                )}
+              </div>
             </div>
           )}
           {event.userName && (
             <div>
               <span className="text-xs font-medium text-gray-400 uppercase">Organiza</span>
-              <p className="text-sm text-gray-700">{event.userName}</p>
+              {event.userSlug ? (
+                <Link href={`/organizador/${event.userSlug}`} className="block text-sm text-gray-700 hover:text-gray-900 underline underline-offset-2">
+                  {event.userName}
+                </Link>
+              ) : (
+                <p className="text-sm text-gray-700">{event.userName}</p>
+              )}
             </div>
           )}
         </div>

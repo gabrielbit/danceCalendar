@@ -13,7 +13,10 @@ interface EventData {
   location: string | null;
   price: string | null;
   paymentInfo: string | null;
-  contactInfo: string | null;
+  instagram: string | null;
+  whatsapp: string | null;
+  website: string | null;
+  modality: string;
   recurrenceType: string;
   categories: { categoryId: number }[];
 }
@@ -68,7 +71,10 @@ export default function EditEventPage() {
           location: event.location || "",
           price: event.price || "",
           paymentInfo: event.paymentInfo || "",
-          contactInfo: event.contactInfo || "",
+          instagram: event.instagram || "",
+          whatsapp: event.whatsapp || "",
+          website: event.website || "",
+          modality: event.modality,
           recurrenceType: event.recurrenceType,
           categoryIds: event.categories.map((c) => c.categoryId),
         }}
